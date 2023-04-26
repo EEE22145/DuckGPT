@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DuckGPT</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2C3E50;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      margin-bottom: -10px;
+    }
+
+    .chatbox {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+      height: 60vh;
+      overflow-y: scroll;
+      padding: 20px;
+    }
+
+    .chat-form {
+      margin-top: -5px;
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-form form {
+      display: flex;
+      flex: 1;
+    }
+
+    .chat-form input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .chat-form button[type="submit"] {
+      background-color: #2C3E50;
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      margin-left: 10px;
+    }
+
+    .chat {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .chat .user-photo {
+      background-color: #1A2333;
+      border-radius: 50%;
+      height: 50px;
+      width: 50px;
+    }
+
+    .chat.self {
+      flex-direction: row-reverse;
+    }
+
+    .chat.self .user-photo {
+      margin-left: 10px;
+    }
+
+    .chat.quack .user-photo {
+      background-image: url('https://i.ibb.co/ynXjdSW/B8-BF9678-5646-47-BC-B8-A4-8-AFEDBAF9-C34.jpg');
+      background-size: cover;
+      margin-right: 10px;
+    }
+
+   .chat-bubble {
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  position: relative;
+  max-width: 60%;
+}
+
+.chat-bubble:after {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #f1f1f1 transparent transparent;
+}
+
+.chat.self .chat-bubble {
+  background-color: #dcf8c6;
+  max-width: 60%;
+}
+
+.chat.self .chat-bubble:after {
+  left: 100%;
+  right: auto;
+  border-color: transparent transparent transparent #dcf8c6;
+}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DuckGPT</h1>
+  </header>
+  <main>
+    <div class="container">
+      <div class="chatbox"></div>
+      <div class="chat-form">
+        <form>
+          <input type="text" placeholder="Type a message...">
+          <button type="submit" disabled>Send</button>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script>
+    const messageInput = document.querySelector('input[type="text"]');
+    const sendButton = document.querySelector('button[type="submit"]');
+    let isTyping = false;
+    
+    function sendMessage(event) {
+      event.preventDefault();
+      if (isTyping) {
+        return;
+      }
+      const message = messageInput.value.trim();
+      if (message) {
+        messageInput.value = '';
+        const chatlog = document.querySelector('.chatbox');
+        const chatMessage = `
+          <div class="chat self">
+            <div class="user-photo"></div>
+            <div class="chat-bubble"><p class="chat-message">${message}</p></div>
+          </div>
+          <div class="chat quack">
+            <div class="user-photo"></div>
+            <div class="chat-bubble"><p class="chat-message"></p></div>
+          </div>
+        `;
+        chatlog.innerHTML += chatMessage;
+        chatlog.scrollTop = chatlog.scrollHeight;
+
+        const quackMessage = "Quack!";
+        const quackChatMessage = chatlog.lastElementChild.querySelector('.chat.quack .chat-message');
+        let i = 0;
+        isTyping = true;
+        
+        const typingInterval = setInterval(() => {
+          if (i < quackMessage.length) {
+            quackChatMessage.textContent += quackMessage.charAt(i);
+            i++;
+          } else {
+            clearInterval(typingInterval);
+            isTyping = false;
+          }
+        }, 100);
+      }
+    }
+    
+    messageInput.addEventListener('input', () => {
+      if (messageInput.value.trim().length > 0) {
+        sendButton.disabled = false;
+      } else {
+        sendButton.disabled = true;
+      }
+    });
+    
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        sendMessage(event);
+      }
+    });
+  </script>
+</body>
+</html>
